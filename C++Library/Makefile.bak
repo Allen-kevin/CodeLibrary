@@ -1,0 +1,22 @@
+<<<<<<< HEAD
+objects = main.o sort.o subarray.o heap.o linklist.o baseclass.o
+=======
+objects = main.o sort.o subarray.o heap.o baseclass.o
+>>>>>>> 65c518faca7efd5ca16e98193f8e715ff8271b50
+edit:$(objects)
+	g++ -o edit $(objects)
+
+main.o:algorithm.h template_class.h
+sort.o:algorithm.h
+subarray.o:algorithm.h
+heap.o:algorithm.h
+<<<<<<< HEAD
+linklist.o:algorithm.h
+=======
+>>>>>>> 65c518faca7efd5ca16e98193f8e715ff8271b50
+baseclass.o:algorithm.h
+#stack.o:algorithm.h
+
+.PHONY:clean
+clean:
+	rm edit $(objects)
