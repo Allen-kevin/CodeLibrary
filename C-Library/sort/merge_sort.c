@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <limits.h>
 
-/* 
+/*
+ * @description : Recursive implementation of merge sort
  * @author		: wanwenkai
  * @date		: 20210221
  * */
