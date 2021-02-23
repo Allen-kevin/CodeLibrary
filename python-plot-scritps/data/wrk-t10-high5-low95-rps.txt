@@ -1,0 +1,100 @@
+thread 1 created
+thread 2 created
+thread 3 created
+thread 4 created
+thread 5 created
+thread 6 created
+thread 7 created
+thread 8 created
+thread 9 created
+thread 10 created
+Running 1m test @ https://10.10.32.116:443/
+  10 threads and 50 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    32.54ms  158.67ms   1.98s    95.40%
+    Req/Sec    10.27k     3.15k   18.94k    68.14%
+  Latency Distribution
+     50%  338.00us
+     75%  376.00us
+     90%  489.00us
+     99%  947.75ms
+  7530839 requests in 1.25m, 5.77GB read
+  Socket errors: connect 0, read 45, write 0, timeout 84
+  Non-2xx or 3xx responses: 376546
+Requests/sec: 100277.11
+Transfer/sec:     78.72MB
+thread 1 created
+thread 2 created
+thread 3 created
+thread 4 created
+thread 5 created
+thread 6 created
+thread 7 created
+thread 8 created
+thread 9 created
+thread 10 created
+Running 1m test @ https://10.10.32.116:443/
+  10 threads and 100 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     2.43ms   41.63ms   1.70s    99.82%
+    Req/Sec    10.07k     2.61k   16.10k    82.47%
+  Latency Distribution
+     50%    0.87ms
+     75%    0.95ms
+     90%    0.99ms
+     99%    1.09ms
+  7508530 requests in 1.25m, 5.76GB read
+  Socket errors: connect 0, read 0, write 0, timeout 29
+  Non-2xx or 3xx responses: 375443
+Requests/sec:  99980.31
+Transfer/sec:     78.49MB
+thread 1 created
+thread 2 created
+thread 3 created
+thread 4 created
+thread 5 created
+thread 6 created
+thread 7 created
+thread 8 created
+thread 9 created
+thread 10 created
+Running 1m test @ https://10.10.32.116:443/
+  10 threads and 200 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.11ms    2.03ms 149.32ms   99.87%
+    Req/Sec    10.09k     2.24k   24.79k    75.65%
+  Latency Distribution
+     50%    1.04ms
+     75%    1.10ms
+     90%    1.13ms
+     99%    1.23ms
+  7525146 requests in 1.25m, 5.77GB read
+  Socket errors: connect 0, read 0, write 0, timeout 2
+  Non-2xx or 3xx responses: 376284
+Requests/sec: 100201.47
+Transfer/sec:     78.66MB
+thread 1 created
+thread 2 created
+thread 3 created
+thread 4 created
+thread 5 created
+thread 6 created
+thread 7 created
+thread 8 created
+thread 9 created
+thread 10 created
+Running 1m test @ https://10.10.32.116:443/
+  10 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     2.94ms    5.11ms 256.29ms   99.76%
+    Req/Sec    10.50k     5.56k   43.16k    84.20%
+  Latency Distribution
+     50%    3.91ms
+     75%    3.97ms
+     90%    4.00ms
+     99%    4.09ms
+  7502366 requests in 1.25m, 5.75GB read
+  Socket errors: connect 0, read 0, write 0, timeout 334
+  Non-2xx or 3xx responses: 375126
+Requests/sec:  99977.57
+Transfer/sec:     78.49MB

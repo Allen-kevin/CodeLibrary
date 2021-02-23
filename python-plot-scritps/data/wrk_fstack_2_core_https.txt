@@ -1,0 +1,52 @@
+Running 1m test @ https://10.10.32.116:443/index.html
+  10 threads and 50 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   520.79us  135.06us  23.33ms   83.15%
+    Req/Sec     9.34k   242.54    10.07k    73.45%
+  Latency Distribution
+     50%  511.00us
+     75%  583.00us
+     90%  640.00us
+     99%  761.00us
+  6982055 requests in 1.25m, 5.53GB read
+Requests/sec:  92970.70
+Transfer/sec:     75.36MB
+Running 1m test @ https://10.10.32.116:443/index.html
+  10 threads and 100 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.05ms  475.26us  36.89ms   66.23%
+    Req/Sec     9.33k     1.04k   13.48k    69.31%
+  Latency Distribution
+     50%    1.05ms
+     75%    1.42ms
+     90%    1.71ms
+     99%    1.88ms
+  6969349 requests in 1.25m, 5.52GB read
+Requests/sec:  92800.93
+Transfer/sec:     75.22MB
+Running 1m test @ https://10.10.32.116:443/index.html
+  10 threads and 200 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     2.11ms    1.43ms  80.21ms   36.94%
+    Req/Sec     9.29k     1.54k   18.30k    69.93%
+  Latency Distribution
+     50%    2.00ms
+     75%    3.64ms
+     90%    3.80ms
+     99%    3.95ms
+  6930868 requests in 1.25m, 5.49GB read
+Requests/sec:  92289.11
+Transfer/sec:     74.81MB
+Running 1m test @ https://10.10.32.116:443/index.html
+  10 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     4.28ms    3.53ms 228.49ms   55.06%
+    Req/Sec     9.24k     1.57k   55.93k    76.48%
+  Latency Distribution
+     50%    4.17ms
+     75%    7.65ms
+     90%    8.05ms
+     99%    8.37ms
+  6882363 requests in 1.25m, 5.45GB read
+Requests/sec:  91643.43
+Transfer/sec:     74.28MB
