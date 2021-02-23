@@ -141,3 +141,48 @@ int quic_sort(int arr[], int left, int right)
 	quic_sort(arr, i+1, right);
 	quic_sort(arr, left, i-1);
 }
+
+/* insert sort */
+/* 将待插入a[i]的关键字从右向左一次与有序区中记录a[j](j=i-1, i-2,
+ * ...,)的关键字比较：
+ * 	1.若a[j]的关键字大于a[i]的关键字，则将a[j]后移一个位置；
+ * 	2.若a[j]的关键字小于或等于a[i]的关键字，则查找过程结束，
+ * 	  j+1即为a[i]的插入位置。
+ **/
+void insert_sort(int arr[], int len)
+{
+	int i, j, temp;
+
+	for (i = 1; i < len; i++) {
+		temp = arr[i];
+		for (j = i-1; j >= 0 && arr[j] > temp; j--) {
+			arr[j+1] = arr[j];
+		}
+
+		arr[j+1] = temp;
+	}
+}
+
+/* 
+ * 希尔排序是一种分组插入方法。
+ * 设待排序元素序列有n个元素，首先取一个整数incre（小于n）作为间
+ * 隔将全部元素分为n/incre个子序列，所有距离为incre的元素放在同
+ * 一个子序列中，在每个子序列中分别实行直接插入排序，然后缩小间
+ * 隔incre，重复上述子序列划分和排序工作，直到最后取incre=1，将
+ * 所有元素放在同一个子序列中排序为止。*/
+void shell_sort(int arr[], int len)
+{
+	int i, j, cur;
+	int incre = len/2;
+
+	while (incre >= 1) {
+		for (i = incre; i < len; i++) {
+			cur = arr[i]; //record the elements to be sorted
+			for (j=i-incre; j >= 0 && arr[j] > cur; j = j-incre) {
+				arr[j+incre] = arr[j];
+			}
+			arr[j+incre] = cur;
+		}
+		incre = incre/2;
+	}
+}
