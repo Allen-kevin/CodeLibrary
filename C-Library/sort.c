@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <limits.h>
-#include "test_sort.h"
 #include "../include/tools.h"
 
 /*
