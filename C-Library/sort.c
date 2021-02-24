@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <limits.h>
-#include "../include/tools.h"
+#include "./include/tools.h"
 
 /*
  * @decription	: select sort
