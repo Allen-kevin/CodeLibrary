@@ -1,7 +1,7 @@
 CC=g++
 CFLGAS = -1
-DEPS = BinaryTree.h algorithm.h ArrayStack.h LinkStack.h ArrayQueue.h LinkQueue.h
-OBJ = main.o BinaryTree.o sort.o subarry.o heap.o baseclass.o
+DEPS = algorithm.h ArrayStack.h LinkStack.h ArrayQueue.h LinkQueue.h qeueu_cal.h
+OBJ = main.o sort.o subarry.o heap.o baseclass.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)

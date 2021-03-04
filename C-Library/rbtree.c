@@ -333,7 +333,7 @@ static void rbtree_delete_fixup(RBROOT *root, RBTREE *node, RBTREE *parent)
 			if ((!other->left || RB_IS_BLACK(other->left)) &&
 				(!other->right || RB_IS_BLACK(other->right))) {
 				RB_SET_RED(other);
-				node->parent;
+				node = parent;
 				parent = RB_PARENT(node);
 			} else {
 				/* case 3:
