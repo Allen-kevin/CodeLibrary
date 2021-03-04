@@ -240,6 +240,7 @@ static void rbtree_insert_fixup(RBROOT *root, RBTREE *node)
 	RB_SET_BLACK(root->node);
 }
 
+
 static void _rbtree_insert(RBROOT *root, RBTREE *node)
 {
 	RBTREE *y = NULL;
@@ -309,10 +310,163 @@ int rbtree_insert(RBROOT *root, TYPE key)
 	return 0;
 }
 
+
+static void rbtree_delete_fixup(RBROOT *root, RBTREE *node, RBTREE *parent)
+{
+	RBTREE *other;
+
+	while ((!node || RB_IS_BLACK(node)) && node != root->node) {
+		if (parent->left == node) {
+			/* the node other is brother of node. */
+			other = parent->right;
+			/* case 1:
+			 * the node other is red */
+			if (RB_IS_RED(other)) {
+				RB_SET_BLACK(other);	
+				RB_SET_RED(parent);
+				rbtree_left_rotate(root, parent);
+				other = parent->right;
+			}
+
+			/* case 2:
+			 * the node other is black, both child is black */
+			if ((!other->left || RB_IS_BLACK(other->left)) &&
+				(!other->right || RB_IS_BLACK(other->right))) {
+				RB_SET_RED(other);
+				node->parent;
+				parent = RB_PARENT(node);
+			} else {
+				/* case 3:
+				 * the node other is black, and other's
+				 * left child is red, right child is black.*/
+				if (!other->right || RB_IS_BLACK(other->right)) {
+								RB_SET_BLACK(other->left);
+					RB_SET_RED(other);
+					rbtree_right_rotate(root, other);
+					other = parent->right;
+				}
+				
+				/* case 4:
+				 * the node other is black, and other's right
+				 * child is red, left child can be any color. */
+				RB_SET_COLOR(other, RB_COLOR(parent));
+				RB_SET_BLACK(parent);
+				RB_SET_BLACK(other->right);
+				rbtree_left_rotate(root, parent);
+				node = root->node;
+				break;
+			}
+		} else {
+			other = parent->left;
+			/* case 1:
+			 * the node other is red */
+			if (RB_IS_RED(other)) {
+				RB_SET_BLACK(other);
+				RB_SET_RED(parent);
+				rbtree_right_rotate(root, parent);
+				other = parent->left;
+			}
+			if ((!other->left || RB_IS_BLACK(other->left)) &&
+				(!other->right || RB_IS_BLACK(other->right))) {
+				RB_SET_RED(other);
+				node = parent;
+				parent = RB_PARENT(node);
+			} else {
+				if (!other->left || RB_IS_BLACK(other->left)) {
+					RB_SET_BLACK(other->right);
+					RB_SET_RED(other);
+					rbtree_left_rotate(root, other);
+					other = parent->left;
+				}
+
+				RB_SET_COLOR(other, RB_COLOR(parent));
+				RB_SET_BLACK(parent);
+				RB_SET_BLACK(other->left);
+				rbtree_right_rotate(root, parent);
+				node = root->node;
+				break;
+			}
+		}
+	}
+
+	if (node)
+		RB_SET_BLACK(node);
+}
+
+
 void _rbtree_delete(RBROOT *root, RBTREE *node)
 {
+	RBTREE *child, parent;
+	int color;
 
+	if ( (node->left != NULL) && (node->right != NULL)) {
+		RBTREE *replace = node;
+
+		replace = replace->right;
+		while (replace->left != NULL)
+			replace = replace->left;
+
+		if (RB_PARENT(node)) {
+			if (RB_PARENT(node)->left == node)
+				RB_PARENT(node)->left = replace;
+			else
+				RB_PARENT(node)->right = replace;
+		} else
+			root->node = replace;
+
+		child = replace->right;
+		parent = RB_PARENT(replace);
+		color = RB_COLOR(replace);
+
+		if (parent == node)
+			parent = replace;
+		else {
+			if (child)
+				RB_SET_PARENT(child, parent);
+			parent->left = child;
+
+			replace->right = node->right;
+			RB_SET_PARENT(node->right, replace);
+		}
+
+		replace->parent = node->parent;
+		replace->color = node->color;
+		replace->left = node->left;
+		node->left->parent = replace;
+
+		if (color == BLACK)
+			rebtree_delete_fixup(root, child, parent);
+		free(node);
+
+		return;
+	}
+
+	if (node->left != NULL)
+		child = node->left;
+	else
+		child = node->right;
+
+	parent = node->parent;
+	color = node->color;
+
+	if (child)
+		child->parent = parent;
+
+	if (parent) {
+		if (parent->left == node)
+			parent->left = child;
+		else
+			parent->right = child;
+	}
+	else
+		root->node = child;
+
+	if (color == BLACK)
+		rbtree_delete_fixup(root, child, parent);
+
+	free(node);
 }
+
 
 void rbtree_delete(RBROOT *root, TYPE key)
 {
