@@ -396,7 +396,7 @@ static void rbtree_delete_fixup(RBROOT *root, RBTREE *node, RBTREE *parent)
 
 void _rbtree_delete(RBROOT *root, RBTREE *node)
 {
-	RBTREE *child, parent;
+	RBTREE *child, *parent;
 	int color;
 
 	if ( (node->left != NULL) && (node->right != NULL)) {
@@ -435,7 +435,7 @@ void _rbtree_delete(RBROOT *root, RBTREE *node)
 		node->left->parent = replace;
 
 		if (color == BLACK)
-			rebtree_delete_fixup(root, child, parent);
+			rbtree_delete_fixup(root, child, parent);
 		free(node);
 
 		return;
@@ -475,6 +475,30 @@ void rbtree_delete(RBROOT *root, TYPE key)
 	if ((z = _recursive_rbtree_search(root->node, key)) != NULL)
 		_rbtree_delete(root, z);
 }
+
+
+static void _rbtree_destroy(RBTREE *tree)
+{
+	if (tree == NULL)
+		return;
+	if (tree->left != NULL)
+		_rbtree_destroy(tree->left);
+	if (tree->right != NULL)
+		_rbtree_destroy(tree->right);
+
+	free(tree);
+}
+
+
+void rbtree_destroy(RBROOT *root)
+{
+	if (root != NULL)
+		_rbtree_destroy(root->node);
+
+	free(root);
+
+}
+
 
 /*
  * Print red-black tree. 
