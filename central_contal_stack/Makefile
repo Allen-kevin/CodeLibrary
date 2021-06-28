@@ -1,12 +1,12 @@
 #make name=main
 
-CFLAG=-g -Wall
+CFLAG=-g -Wall -std=c++11
 LFLAG=-lpthread
 
-SRC=$(name).c
+SRC=$(name).cpp
 TARGET=$(name)
 $(TARGET):$(SRC)
-	cc $^ -o $@ $(CFLAG) $(LFLAG)
+	g++ $^ -o $@ $(CFLAG) $(LFLAG)
 
 .PHONY:clean
 clean:

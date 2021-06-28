@@ -13,11 +13,11 @@
 #include <deque>
 #include <algorithm>
 #include <iterator>
-#include "logger.h"
 
 #define MAX_EVENTS 512
 #define MAX_MESSAGE_LEN 512
 #define TIME_THRESHOLD 1000000000
+#define SEC_TO_NSEC 1000000000
 #define DEFAULT_PORT 4321
 #define TOTAL_BD 1024*1024*1024
 #define MAX_NUM 10
@@ -28,7 +28,7 @@ int sockfd, connfd;
 int end_node;
 uint32_t total_avail_bd;
 
-static enum LOG_LEVEL logger=LOG_LEVEL_INFO;
+//static enum LOG_LEVEL logger=LOG_LEVEL_INFO;
 static volatile int keep_running = 1;
 
 struct time_event {
@@ -69,7 +69,9 @@ static int update_require_alloc(uint32_t require_len, uint32_t cur_consum_bd)
 }
 
 
-static uint32_t add_event_queue(uint32_t require_len, uint32_t cur_consum_bd, struct timespec &time_now, deque<struct time_event> &time_queue)
+static uint32_t add_event_queue(uint32_t require_len, 
+		uint32_t cur_consum_bd, struct timespec &time_now, 
+		deque<struct time_event> &time_queue)
 {
 	struct time_event cur_event;
 
@@ -83,35 +85,38 @@ static uint32_t add_event_queue(uint32_t require_len, uint32_t cur_consum_bd, st
 
 }
 
-static void pop_timeout_event(struct timespec &time_now, uint32_t &cur_consum_bd, deque<struct time_event> &time_queue)
+static void pop_timeout_event(struct timespec &time_now, 
+		uint32_t &cur_consum_bd, deque<struct time_event> &time_queue)
 {
 	uint32_t elapsed;
-	struct time_event recent_event = time_queue.back();//access recent element
-	struct time_event oldest_event = time_queue.front();//access first element
+	/* Access recent element. */
+	struct time_event recent_event = time_queue.back();
+	/* Access first element. */
+	struct time_event oldest_event = time_queue.front();
 	struct timespec time_oldest = oldest_event.time_event;
 
 	cur_consum_bd = recent_event.accumulative_alloc_bd;
-
-	elapsed = time_now.tv_sec - time_oldest.tv_sec + time_now.tv_nsec - time_oldest.tv_nsec;
-	while (elapsed >= TIME_THRESHOLD) {
-		time_queue.pop_front();
+	elapsed = (time_now.tv_sec - time_oldest.tv_sec)*SEC_TO_NSEC + time_now.tv_nsec - time_oldest.tv_nsec;
+	while (elapsed >= TIME_THRESHOLD && time_queue.size()>2) {
 		cur_consum_bd -= oldest_event.event_alloc_bd;
 		total_avail_bd += oldest_event.event_alloc_bd;
+		time_queue.pop_front();
 		oldest_event = time_queue.front();
-		elapsed = time_now.tv_sec - time_oldest.tv_sec + time_now.tv_nsec - time_oldest.tv_nsec;
+		time_oldest = oldest_event.time_event;
+		elapsed = (time_now.tv_sec - time_oldest.tv_sec)*SEC_TO_NSEC + time_now.tv_nsec - time_oldest.tv_nsec;
 	}
 }
 
-static uint32_t update_event_queue(uint32_t require_len, deque<struct time_event> &time_queue)
+static uint32_t update_event_queue(uint32_t require_len, 
+		deque<struct time_event> &time_queue)
 {
 	struct timespec time_now = {0, 0};
 	uint32_t cur_consum_bd = 0;
-
 	clock_gettime(CLOCK_REALTIME, &time_now);
-	if (time_queue.empty()) {
+	if (time_queue.size() < 2) {
 		require_len = add_event_queue(require_len, 0, time_now, time_queue);
 		total_avail_bd -= require_len;
-
+		
 		return require_len;
 	}
 
@@ -150,8 +155,8 @@ static int bandwidth_alloc(uint32_t require_len, int fd)
 {
 	int index = get_index_deque(fd);
 
-	if (index < 0) {
-		perror("Invalid deque index..\n");
+	if (index < 0 || require_len <= 0) {
+		cout <<"deque index = " << index <<"require len = "<<require_len<<endl;
 		exit(-1);
 	}
 
@@ -219,7 +224,7 @@ static void epoll_accept(int epollfd, struct epoll_event *ev)
 		exit(-1);
 	}
 
-	log_info(logger, "Success establish connection..\n");
+	cout << "Success establish connection.."<<std::endl;
 	ev->events = EPOLLIN|EPOLLET;
 	ev->data.fd = connfd;
 	if (epoll_ctl(epollfd, EPOLL_CTL_ADD, connfd, ev) == -1) {
@@ -240,10 +245,19 @@ static void recv_send(int epollfd, struct epoll_event *events)
 		shutdown(events->data.fd, SHUT_RDWR);
 		return;
 	}
-	log_info(logger, "before send\n");
-    //recv_len = bandwidth_alloc(msg_parse(buff), events->data.fd);
-	send(events->data.fd, buff, recv_len, 0);
-	log_info(logger, "%s\n", buff);
+    recv_len = bandwidth_alloc(msg_parse(buff), events->data.fd);
+	if (recv_len <= 0) {
+		cout <<"The msg should consist of a string of numbers. recv len = " <<recv_len <<endl;
+	}
+
+#if 1 //for latency testing
+	struct timespec time_now = {0, 0};
+	clock_gettime(CLOCK_REALTIME, &time_now);
+	string str = std::to_string(time_now.tv_nsec);
+#endif
+	//string str = std::to_string(recv_len);
+	send(events->data.fd, str.c_str(), str.size()+1, 0);
+	//cout <<str <<endl;
 
 }
 
@@ -256,14 +270,12 @@ static int pkt_process(int epollfd, struct epoll_event *ev)
 	if (new_events == -1) 
 		perror("Error in epoll_wait..\n");
 	
-	int i = 0;
-	for (i = 0; i < new_events; i++) {
+	for (int i = 0; i < new_events; i++) {
 		if (events[i].data.fd == sockfd) {
 			epoll_accept(epollfd, ev);
 			add_index_deque(ev->data.fd);
 		}
 		else {
-			log_info(logger, "recv send..\n");
 			recv_send(epollfd, &events[i]);
 		}
 	}
@@ -294,7 +306,7 @@ int main(int argc, char **argv)
 		pkt_process(epollfd, &ev);
 	}
 
-	log_info(logger, "Server close sockfd..\n");
+	cout<<"Server close sockfd.."<<endl;
 	close(sockfd);
 
 	return 0;
